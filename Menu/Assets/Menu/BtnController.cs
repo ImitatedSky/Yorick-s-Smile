@@ -7,6 +7,8 @@ using SimpleJSON;
 public class BtnController : MonoBehaviour
 {
     public string systemLanguage = "English"; // 系統語言
+    // language 分類
+    public string languageCategory = "menu_txt";
     public Sprite normalSprite;
     public Sprite hoverSprite;
     public Sprite clickSprite;
@@ -29,7 +31,7 @@ public class BtnController : MonoBehaviour
     // 載入 JSON 中的語言資料
     void LoadLanguageData()
     {
-        TextAsset jsonData = Resources.Load<TextAsset>("language");
+        TextAsset jsonData = Resources.Load<TextAsset>(languageCategory);
 
 
         if (jsonData != null)
