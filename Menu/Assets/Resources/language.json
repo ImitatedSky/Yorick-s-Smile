@@ -1,0 +1,14 @@
+{
+    "en": {
+        "start": "Start",
+        "menu": "Menu",
+        "setting": "Settings",
+        "music": "Music"
+    },
+    "zh_TW": {
+        "start": "開始",
+        "menu": "主選單",
+        "setting": "設定",
+        "music": "音樂"
+    }
+}
