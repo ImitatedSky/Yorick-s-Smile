@@ -1,8 +1,0 @@
-- repo: https://github.com/dotnet/format
-  rev: v7.0.0  # 可以根據需要選擇適當版本
-  hooks:
-    - id: dotnet-format
-      name: dotnet-format
-      language: system
-      entry: dotnet format
-      files: \.cs$
