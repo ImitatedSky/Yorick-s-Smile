@@ -30,7 +30,7 @@ public class LanguageManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadConfig(); // 加載語言配置
+            LoadConfig(); // 
             LoadLanguages(); // 加載語言資料
             LoadUserLanguagePreference(); // 載入用戶語言偏好
         }
@@ -41,7 +41,7 @@ public class LanguageManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 加載語言配置的方法，從 Resources 資料夾中讀取 config.json
+    /// 從 Resources 讀取 config.json，設置languageConfig[entry.Key]
     /// </summary>
     private void LoadConfig()
     {
@@ -63,7 +63,7 @@ public class LanguageManager : MonoBehaviour
     /// <summary>
     /// 從 Resources/MultiLangSupport 資料夾中讀取所有 JSON 文件
     /// </summary>
-    private void LoadLanguages()
+    public void LoadLanguages()
     {
         TextAsset[] languageFiles = Resources.LoadAll<TextAsset>("MultiLangSupport");
         foreach (TextAsset file in languageFiles)
@@ -75,61 +75,22 @@ public class LanguageManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 設定當前語言的方法
+    /// 載入用戶語言偏好的方法，如果沒有抓取系統語言
     /// </summary>
-    /// <param name="lang"></param>
-    public void SetLanguage(string lang)
+    private void LoadUserLanguagePreference()
     {
-        if (languageDictionary.ContainsKey(lang))
+        if (PlayerPrefs.HasKey(LanguagePreferenceKey))
         {
-            currentLanguage = lang;
-            SaveUserLanguagePreference(lang); // 保存用戶語言偏好
+            currentLanguage = PlayerPrefs.GetString(LanguagePreferenceKey);
         }
         else
         {
-            Debug.LogWarning("Language not found: " + lang);
+            LoadSystemLanguage();
         }
-    }
-
-    // 獲取指定鍵的文本
-    public string GetText(string key)
-    {
-        Debug.Log("[Lang_Ma]:"+"GetText");
-        if (languageDictionary.ContainsKey(currentLanguage) && languageDictionary[currentLanguage].HasKey(key))
-        {
-            return languageDictionary[currentLanguage][key];
-        }
-        return "Key not found: " + key;
-    }
-
-    // 獲取指定鍵的圖片
-    public Sprite GetSprite(string key)
-    {
-        string spritePath = GetText(key);
-        return Resources.Load<Sprite>(spritePath);
-    }
-
+    }    
+    
     /// <summary>
-    /// 獲取當前語言的字體,放在MultiLangSupport/lang.json -> font_asset
-    /// </summary>
-    /// <returns></returns>
-    public TMP_FontAsset GetFont()
-    {
-        if(languageDictionary == null)
-        {
-            LoadConfig();
-        }
-        // TODO: 要做一個default 如果那個語言沒有 font
-        string font_asset = languageDictionary[currentLanguage]["font_asset"];
-        Debug.Log("font_asset"+font_asset);
-        TMP_FontAsset font = Resources.Load<TMP_FontAsset>(font_asset);
-        Debug.Log("font"+font);
-
-        return font;
-    }
-
-    /// <summary>
-    /// 加載系統語言，如果沒有對應的語言配置，使用默認語言
+    /// 加載系統語言，如果config中沒有對應的語言配置，使用默認語言defaultLanguage
     /// </summary>
     public void LoadSystemLanguage()
     {
@@ -150,24 +111,26 @@ public class LanguageManager : MonoBehaviour
         // 如果沒有對應語言，使用默認語言
         if (!languageFound)
         {
-            currentLanguage = defaultLanguage; // 默認語言為英文
+            currentLanguage = defaultLanguage; // 默認語言
         }
 
         SaveUserLanguagePreference(currentLanguage); // 保存系統語言到用戶設置
     }
 
     /// <summary>
-    /// 載入用戶語言偏好的方法
+    /// 設定當前語言的方法
     /// </summary>
-    private void LoadUserLanguagePreference()
+    /// <param name="lang"></param>
+    public void SetLanguage(string lang)
     {
-        if (PlayerPrefs.HasKey(LanguagePreferenceKey))
+        if (languageDictionary.ContainsKey(lang))
         {
-            currentLanguage = PlayerPrefs.GetString(LanguagePreferenceKey);
+            currentLanguage = lang;
+            SaveUserLanguagePreference(lang); // 保存用戶語言偏好
         }
         else
         {
-            LoadSystemLanguage();
+            Debug.LogWarning("Language not found: " + lang);
         }
     }
 
@@ -175,12 +138,11 @@ public class LanguageManager : MonoBehaviour
     /// 保存用戶語言偏好
     /// </summary>
     /// <param name="lang"></param>
-    private void SaveUserLanguagePreference(string lang)
+    public void SaveUserLanguagePreference(string lang)
     {
         PlayerPrefs.SetString(LanguagePreferenceKey, lang);
         PlayerPrefs.Save();
 
-        TriggerAllLocalizedElements();
     }
 
     /// <summary>
@@ -200,6 +162,51 @@ public class LanguageManager : MonoBehaviour
     public string GetCurrentLanguage()
     {
         return currentLanguage;
+    }
+
+
+    /// <summary>
+    /// 獲取指定鍵的文本
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public string GetText(string key)
+    {
+        if (languageDictionary.ContainsKey(currentLanguage) && languageDictionary[currentLanguage].HasKey(key))
+        {
+            return languageDictionary[currentLanguage][key];
+        }
+        return "Key not found: " + key;
+    }
+
+    /// <summary>
+    /// 獲取指定鍵的圖片
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public Sprite GetSprite(string key)
+    {
+        string spritePath = GetText(key);
+        return Resources.Load<Sprite>(spritePath);
+    }
+
+    /// <summary>
+    /// 獲取當前語言的字體,放在MultiLangSupport/lang.json -> font_asset
+    /// </summary>
+    /// <returns></returns>
+    public TMP_FontAsset GetFont()
+    {
+        if(languageDictionary == null)
+        {
+            LoadConfig();
+        }
+        // TODO: 要做一個default 如果那個語言沒有 font
+        string font_asset = languageDictionary[currentLanguage]["font_asset"];
+
+        TMP_FontAsset font = Resources.Load<TMP_FontAsset>(font_asset);
+
+
+        return font;
     }
 
 }

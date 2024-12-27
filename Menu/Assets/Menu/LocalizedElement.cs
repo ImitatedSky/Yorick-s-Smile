@@ -15,7 +15,10 @@ public class LocalizedElement : MonoBehaviour
 
     void Start()
     {
-        if (key == null)
+        if (key == null || key == "")
+        {
+            key = gameObject.name.ToLower();
+        }
         {
             key = gameObject.name.ToLower();
         }
