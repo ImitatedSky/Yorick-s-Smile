@@ -31,6 +31,7 @@ public class BtnController : MonoBehaviour
     // 載入 JSON 中的語言資料
     void LoadLanguageData()
     {
+        // 讀取 JSON 檔案
         TextAsset jsonData = Resources.Load<TextAsset>(languageCategory);
 
 

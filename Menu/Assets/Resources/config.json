@@ -1,0 +1,10 @@
+{
+    
+    "languages": {
+        "zh_CN": "ChineseSimplified",
+        "zh_TW": "ChineseTraditional",
+        "en": "English",
+        "ko": "Korean",
+        "ja": "Japanese"
+    }
+}
